@@ -300,34 +300,39 @@ Spring Controller 使得开发基于 HTTP 的应用程序变得简单和直观�
 下面是一个使用 `@RestController` 的简单示例：
 
 ```java
-import org.springframework.web.bind.annotation.GetMapping;
+package com.example.demo1.control;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+/*@RestController
+表明这个类是一个 Spring MVC 控制器，并且所有的方法返回值都会自动转换为 HTTP 响应体。
+@RestController 是 @Controller 和 @ResponseBody 的一个便捷组合，通常用于创建 RESTful Web 服务。
+* */
 @RestController
-public class GreetingController {
-
-    @GetMapping("/greeting")
-    public Greeting getGreeting() {
-        return new Greeting("Hello, World!");
+public class helloController {
+    /*
+    * @RequestMapping("/hello")：
+        这是一个方法级别的注解，用于将 HTTP 请求映射到控制器方法上。
+        在这个例子中，它将 HTTP 请求的 /hello 路径映射到 hello 方法上。
+    * */
+    @RequestMapping("/hello")
+    public String hello(){
+        //方法的返回类型是 String，这意味着方法的返回值将作为文本响应返回给客户端。
+        return "你好 测试一下Hello，需要输入http://localhost:8080/hello,hello来自上面的请求";
     }
+    @RequestMapping("hi")
+    public String hi(){ return "hi"; }
 }
 
-class Greeting {
-    private String message;
-
-    public Greeting(String message) {
-        this.message = message;
-    }
-
-    public String getMessage() {
-        return message;
-    }
-}
 ```
 
 在这个例子中，`GreetingController` 类用 `@RestController` 注解标记，`getGreeting` 方法返回一个 `Greeting` 对象。当客户端请求 `/greeting` 路径时，`getGreeting` 方法会被调用，并且返回的对象会被自动转换为 JSON 格式的响应体。
 
 `@RestController` 是创建现代 Web 应用程序和服务时非常有用的工具，特别是当你需要快速开发 RESTful API 时。它简化了开发过程，并帮助开发者遵循 REST 架构的最佳实践。
+
+[效果如图](./pictures/图1.png)
 
 ## Spring DAO（Data Access Object）是 Spring 框架中用于简化数据访问层实现的一个模式。DAO 模式是一种常见的设计模式，它提供了一个抽象层，用于封装数据库访问的逻辑，使得应用程序可以通过统一的接口与数据库交互，而不需要关心具体的实现细节。
 

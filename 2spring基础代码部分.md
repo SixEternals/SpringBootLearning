@@ -363,3 +363,96 @@ public class AppConfig {
 
 现在，当你运行应用程序并调用任何匹配切点的方法时，`logBefore` 方法会在方法执行之前被调用，并打印日志信息。
 请注意，为了使 AOP 正常工作，你的项目需要依赖 AspectJ 相关的库。如果你使用 Maven 或 Gradle，可以在项目的 `pom.xml` 或 `build.gradle` 文件中添加相应的依赖。
+
+# 注入时使用 yml/ymal(这两是同一坨) 更佳 不建议使用自带的 properties
+
+配置 yml 和配置 properties 都可以获取到值 ， 强烈推荐 yml；
+
+如果我们在某个业务中，只需要获取配置文件中的某个值，可以使用一下 @value；
+
+如果说，我们专门编写了一个 JavaBean 来和配置文件进行一一映射，就直接@configurationProperties，不要犹豫！
+
+```java 例子
+package com.example.demo.config;
+
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.stereotype.Component;
+
+@Component
+@ConfigurationProperties(prefix = "my")
+public class MyConfig {
+    private String name;
+    private int port;
+    private boolean enabled;
+
+    // 标准的getter和setter方法
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public int getPort() {
+        return port;
+    }
+
+    public void setPort(int port) {
+        this.port = port;
+    }
+
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
+}
+```
+
+然后，在`resources`目录下创建 YAML 配置文件`application.yml`，用于定义配置项：
+
+```yaml
+my:
+  name: 'MyApp'
+  port: 8080
+  enabled: true
+```
+
+在 Spring Boot 的测试类中，我们可以注入`MyConfig`对象，并验证配置信息是否正确加载：
+
+```java
+package com.example.demo;
+
+import com.example.demo.config.MyConfig;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+
+@RunWith(SpringBootTest.class)
+public class ApplicationTests {
+
+    @Autowired
+    private MyConfig myConfig;
+
+    @Test
+    public void contextLoads() {
+        System.out.println("Name: " + myConfig.getName());
+        System.out.println("Port: " + myConfig.getPort());
+        System.out.println("Enabled: " + myConfig.isEnabled());
+    }
+}
+```
+
+运行测试类`ApplicationTests`，输出结果将会显示从`application.yml`文件中加载的配置信息：
+
+```yml
+Name: MyApp
+Port: 8080
+Enabled: true
+```
+
+这个例子展示了如何使用`@ConfigurationProperties`注解和 YAML 配置文件来简化配置信息的注入过程，并通过实体类`MyConfig`将配置信息封装起来，使得配置管理和使用变得更加清晰和方便。
